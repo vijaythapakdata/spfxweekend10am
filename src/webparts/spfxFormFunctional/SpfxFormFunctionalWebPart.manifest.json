@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "52872374-df1f-4dce-acd7-2c67f48aba6d",
+  "alias": "SpfxFormFunctionalWebPart",
+  "componentType": "WebPart",
+
+  
+  "version": "*",
+  "manifestVersion": 2,
+
+ 
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", 
+    "group": { "default": "Advanced" },
+    "title": { "default": "SpfxFormFunctional" },
+    "description": { "default": "SpfxFormFunctional description" },
+    "officeFabricIconFontName": "Page",
+    "properties": {
+      "ListName": "First List"
+    }
+  }]
+}
