@@ -4,4 +4,8 @@ export interface ISpfxFormFunctionalProps {
  ListName:string;
  siteurl:string;
  context:WebPartContext;
+ DepartmentOptions:any;
+ GenderOptions:any;
+ SkillsOptions:any;
+ CityOptions:any;
 }

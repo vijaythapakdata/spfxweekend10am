@@ -10,4 +10,9 @@ export interface ISpfxFormFunctionalState {
     AdminId:any;
     Manager:any[];
     ManagerId:any[];
+    DOB:any;
+    City:any;
+    Department:string;
+    Gender:string;
+    Skills:any[];
 }

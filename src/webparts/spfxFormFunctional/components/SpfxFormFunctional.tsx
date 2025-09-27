@@ -6,7 +6,7 @@ import {Web} from "@pnp/sp/presets/all";
 import "@pnp/sp/items";
 import "@pnp/sp/lists";
 import { Dialog } from '@microsoft/sp-dialog';
-import { TextField,Slider,PrimaryButton } from '@fluentui/react';
+import { TextField,Slider,PrimaryButton, IDatePickerStrings, DatePicker, Dropdown, ChoiceGroup, IDropdownOption } from '@fluentui/react';
 import {  PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 const SpfxFormFunctional:React.FC<ISpfxFormFunctionalProps>=(props)=>{
   const [formdata,setFormData]=React.useState<ISpfxFormFunctionalState>({
@@ -19,7 +19,12 @@ const SpfxFormFunctional:React.FC<ISpfxFormFunctionalProps>=(props)=>{
     Admin:"",
     AdminId:"",
     Manager:[],
-    ManagerId:[]
+    ManagerId:[],
+    DOB:null,
+    City:"",
+    Department:"",
+    Gender:"",
+    Skills:[]
   });
   //Create form function
   const createForm=async()=>{
@@ -35,6 +40,12 @@ const item=await list.items.add({
   Score:formdata.Score,
   Salary:parseFloat(formdata.Salary),
   AdminId:formdata.AdminId,
+  ManagerId:{results:formdata.ManagerId},
+  DOB:new Date(formdata.DOB),
+  CityId:formdata.City,
+  Department:formdata.Department,
+  Gender:formdata.Gender,
+  Skills:{results:formdata.Skills}
 });
 Dialog.alert(`Item created successfully with ID ${item.data.Id}`);
 console.log(item);
@@ -48,7 +59,12 @@ setFormData({
      Admin:"",
     AdminId:"",
     Manager:[],
-    ManagerId:[]
+    ManagerId:[],
+    DOB:null,
+     City:"",
+    Department:"",
+    Gender:"",
+    Skills:[]
 })
     }
     catch(err){
@@ -67,6 +83,20 @@ const _getAdmins=(items: any[]) =>{
   setFormData(a=>({...a,Admin:items[0].text,AdminId:items[0].id}))
  }
 }
+//get Managers
+const getManagers=(items:any)=>{
+  const managerName=items.map((i:any)=>i.text);
+   const managerNameId=items.map((i:any)=>i.id);
+   setFormData(a=>({...a,Manager:managerName,ManagerId:managerNameId}))
+}
+
+//skils 
+
+const onSkillsChange=(event:React.FormEvent<HTMLInputElement>,options:IDropdownOption):void=>{
+  const selectedKey=options.selected?[...formdata.Skills,options.key as string]:formdata.Skills.filter((key)=>key!==options.key);
+  setFormData(a=>({...a,Skills:selectedKey}))
+}
+
   return(
     <>
     <TextField
@@ -123,6 +153,61 @@ const _getAdmins=(items: any[]) =>{
     defaultSelectedUsers={[formdata.Admin? formdata.Admin:""]} // to show the selected user on edit form
     webAbsoluteUrl={props.siteurl}
     />
+    <PeoplePicker
+    context={props.context as any}
+    titleText="Managers"
+    personSelectionLimit={3}
+  
+    showtooltip={true}
+    
+  
+    onChange={getManagers}
+  
+    principalTypes={[PrincipalType.User]}
+    resolveDelay={1000} 
+    ensureUser={true}
+    // defaultSelectedUsers={[formdata.Admin? formdata.Admin:""]} // to show the selected user on edit form
+    defaultSelectedUsers={formdata.Manager}
+    webAbsoluteUrl={props.siteurl}
+    />
+    <DatePicker
+    label='Date of Birth'
+    strings={DatePickerStrings}
+    value={formdata.DOB}
+    formatDate={FormateDate}
+    onSelectDate={(date)=>setFormData(a=>({...a,DOB:date}))}
+    />
+    {/* City from Lookup Field */}
+    <Dropdown
+    label='City'
+    options={props.CityOptions}
+    selectedKey={formdata.City}
+    onChange={(_,options)=>handleChange("City",options?.key as string)}
+    />
+    {/* Department single selected dropdown */}
+    <Dropdown
+    label='Department'
+    options={props.DepartmentOptions}
+    selectedKey={formdata.Department}
+    onChange={(_,options)=>handleChange("Department",options?.key as string)}
+    />
+    {/* Gender as Radio button */}
+    <ChoiceGroup
+    label='Gender'
+    options={props.GenderOptions}
+    selectedKey={formdata.Gender}
+    onChange={(_,options)=>handleChange("Gender",options?.key as string)}
+    />
+    {/* Skills multi select dropdown */}
+    <Dropdown
+    label='Skills'
+    options={props.SkillsOptions}
+    // selectedKey={formdata.City}
+    defaultSelectedKeys={formdata.Skills}
+    // onChange={(_,options)=>handleChange("City",options?.key as string)}
+    onChange={onSkillsChange}
+    multiSelect
+    />
     <TextField
     label='Full Address'
     value={formdata.FullAddress}
@@ -138,3 +223,31 @@ const _getAdmins=(items: any[]) =>{
   )
 }
 export default SpfxFormFunctional;
+
+//DatePicket Strings
+
+export const DatePickerStrings:IDatePickerStrings={
+  months:["January","February","March","April","May","June","July","August","September","October","November","December"],
+  shortMonths:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+  days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+  shortDays:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+  goToToday:"Go to today",
+  prevMonthAriaLabel:"Go to previous month",
+  nextMonthAriaLabel:"Go to next month",
+  prevYearAriaLabel:"Go to previous year",
+  nextYearAriaLabel:"Go to next year",
+  closeButtonAriaLabel:"Close date picker"
+
+}
+export const FormateDate=(date:any):string=>{
+  var date1=new Date(date);
+  //get year
+  var year=date1.getFullYear();
+  //get month
+  var month=(1+date1.getMonth()).toString();
+  month=month.length>1?month:"0"+month;
+  //get day
+  var day=date1.getDate().toString();
+  day=day.length>1?day:"0"+day;
+  return month+"/"+day+"/"+year;
+}
