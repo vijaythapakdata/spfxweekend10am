@@ -15,4 +15,5 @@ export interface ISpfxFormFunctionalState {
     Department:string;
     Gender:string;
     Skills:any[];
+    Attachments:any[];
 }

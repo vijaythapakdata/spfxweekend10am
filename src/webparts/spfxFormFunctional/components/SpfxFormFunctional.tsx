@@ -6,7 +6,7 @@ import {Web} from "@pnp/sp/presets/all";
 import "@pnp/sp/items";
 import "@pnp/sp/lists";
 import { Dialog } from '@microsoft/sp-dialog';
-import { TextField,Slider,PrimaryButton, IDatePickerStrings, DatePicker, Dropdown, ChoiceGroup, IDropdownOption } from '@fluentui/react';
+import { TextField,Slider,PrimaryButton, IDatePickerStrings, DatePicker, Dropdown, ChoiceGroup, IDropdownOption, Label } from '@fluentui/react';
 import {  PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 const SpfxFormFunctional:React.FC<ISpfxFormFunctionalProps>=(props)=>{
   const [formdata,setFormData]=React.useState<ISpfxFormFunctionalState>({
@@ -24,7 +24,8 @@ const SpfxFormFunctional:React.FC<ISpfxFormFunctionalProps>=(props)=>{
     City:"",
     Department:"",
     Gender:"",
-    Skills:[]
+    Skills:[],
+    Attachments:[]
   });
   //Create form function
   const createForm=async()=>{
@@ -46,7 +47,14 @@ const item=await list.items.add({
   Department:formdata.Department,
   Gender:formdata.Gender,
   Skills:{results:formdata.Skills}
+
 });
+const itemId=item.data.Id;
+//upload multiple
+for(const file of formdata.Attachments){
+  const arrayBuffer=await file.arrayBuffer();
+  await list.items.getById(itemId).attachmentFiles.add(file.name,arrayBuffer);
+}
 Dialog.alert(`Item created successfully with ID ${item.data.Id}`);
 console.log(item);
 setFormData({
@@ -64,7 +72,8 @@ setFormData({
      City:"",
     Department:"",
     Gender:"",
-    Skills:[]
+    Skills:[],
+    Attachments:[]
 })
     }
     catch(err){
@@ -95,6 +104,14 @@ const getManagers=(items:any)=>{
 const onSkillsChange=(event:React.FormEvent<HTMLInputElement>,options:IDropdownOption):void=>{
   const selectedKey=options.selected?[...formdata.Skills,options.key as string]:formdata.Skills.filter((key)=>key!==options.key);
   setFormData(a=>({...a,Skills:selectedKey}))
+}
+//file upload
+
+const handleUploadFile=(event:React.ChangeEvent<HTMLInputElement>):void=>{
+  const files=event.target.files;
+  if(files){
+    setFormData(prev=>({...prev,Attachments:Array.from(files)}));
+  }
 }
 
   return(
@@ -217,6 +234,9 @@ const onSkillsChange=(event:React.FormEvent<HTMLInputElement>,options:IDropdownO
     multiline
     rows={5}
     />
+    <Label>File Upload</Label>
+    <input type='File' multiple onChange={handleUploadFile}/>
+    <br/>
     <br/>
     <PrimaryButton text='Save' onClick={createForm} iconProps={{iconName:'save'}}/>
     </>

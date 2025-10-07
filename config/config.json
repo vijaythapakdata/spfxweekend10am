@@ -9,11 +9,29 @@
           "manifest": "./src/webparts/spfxFormFunctional/SpfxFormFunctionalWebPart.manifest.json"
         }
       ]
+    },
+    "get-attachment-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/getAttachment/GetAttachmentWebPart.js",
+          "manifest": "./src/webparts/getAttachment/GetAttachmentWebPart.manifest.json"
+        }
+      ]
+    },
+    "formik-validation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/formikValidation/FormikValidationWebPart.js",
+          "manifest": "./src/webparts/formikValidation/FormikValidationWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
     "SpfxFormFunctionalWebPartStrings": "lib/webparts/spfxFormFunctional/loc/{locale}.js",
-    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "GetAttachmentWebPartStrings": "lib/webparts/getAttachment/loc/{locale}.js",
+    "FormikValidationWebPartStrings": "lib/webparts/formikValidation/loc/{locale}.js"
   }
 }
